@@ -1,0 +1,13 @@
+{
+  "name": "spec-first-marketplace",
+  "owner": {
+    "name": "Joshua Wilson"
+  },
+  "plugins": [
+    {
+      "name": "spec-first",
+      "source": ".",
+      "description": "Tools to organize project knowledge so AI agents can understand your codebase"
+    }
+  ]
+}
