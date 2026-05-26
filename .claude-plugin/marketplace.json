@@ -6,8 +6,11 @@
   "plugins": [
     {
       "name": "spec-first",
-      "source": ".",
-      "description": "Tools to organize project knowledge so AI agents can understand your codebase"
+      "description": "Tools to organize project knowledge so AI agents can understand your codebase",
+      "source": {
+        "source": "github",
+        "repo": "joshuawilson/spec-first"
+      }
     }
   ]
 }
