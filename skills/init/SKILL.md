@@ -278,6 +278,7 @@ When `.ai/spec/` exists with what/ and how/ directories:
 2. **Present plan** — show what's missing or misaligned:
    - Missing README quick-start table → offer to add
    - Missing cross-reference table → offer to add
+   - Layer READMEs exist (`what/README.md`, `how/README.md`) → absorb their spec indexes and cross-reference tables into the main README, then suggest removing them
    - Unnumbered behavioral rules → note as suggestion (don't rewrite)
    - Missing planned markers → note as suggestion
    - Missing Constraints section in what/ files → note as suggestion
