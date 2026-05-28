@@ -17,11 +17,10 @@ You MUST create exactly these files and directories. Do not create `features/`, 
 
 **Required (always create):**
 1. `.ai/spec/README.md`
-2. `.ai/spec/constraints.md`
-3. `.ai/spec/what/system-overview.md`
-4. `.ai/spec/how/project-structure.md`
-5. `CLAUDE.md` (or update existing one)
-6. `ARCHITECTURE.md` at the project root (human-facing, not agent context)
+2. `.ai/spec/what/system-overview.md`
+3. `.ai/spec/how/project-structure.md`
+4. `CLAUDE.md` (or update existing one)
+5. `ARCHITECTURE.md` at the project root (human-facing, not agent context)
 
 **Created from exploration (one or more of each):**
 6. `.ai/spec/what/<component>.md` — one file per major component discovered
@@ -31,7 +30,7 @@ You MUST create exactly these files and directories. Do not create `features/`, 
 8. `.ai/spec/glossary.md`
 9. `.ai/spec/decisions/` (with NNNN-slug.md files)
 
-Do NOT create `features/`, `standards/`, `architecture.md`, or any other files. Content about the system's architecture goes in `what/system-overview.md` (behavioral rules, integration points) and `how/project-structure.md` (code organization). Coding conventions stay in CLAUDE.md.
+Do NOT create `features/`, `standards/`, `constraints.md`, `what/README.md`, `how/README.md`, or any other files. Component-specific and cross-cutting constraints go in the relevant what/ file's Constraints section — co-located with the behavioral rules that give them context. Development conventions (build commands, test commands, coding style) stay in CLAUDE.md. Content about the system's architecture goes in `what/system-overview.md` (behavioral rules, integration points) and `how/project-structure.md` (code organization).
 
 ## Mode detection
 
@@ -124,21 +123,22 @@ AI agents. Content is optimized for precision and machine consumption.
 | Understand the system | `what/system-overview.md` |
 | <task> | <file(s)> |
 
+## Cross-Reference
+
+When what/ and how/ file names don't match 1:1, this table maps behavioral specs to their implementation guides:
+
+| what/ | how/ |
+|---|---|
+| <what/file.md> | <how/file.md> |
+
 ## Conventions
 
 - **Rule numbering:** behavioral rules are numbered sequentially within each what/ file.
 - **Planned changes:** unimplemented behavior is marked with `[PLANNED]` or `[PLANNED: TICKET-XXXX]` inline next to the rule it affects.
+- **Constraints:** component-specific and cross-cutting constraints go in the relevant what/ file's Constraints section, co-located with behavioral rules. Development conventions go in CLAUDE.md.
 - **Authority:** what/ specs are authoritative for behavior. how/ specs are authoritative for implementation. When they conflict, what/ wins.
-
-## Updating this spec
-
-- **Adding a new component:** create `what/<component>.md` with behavioral rules and `how/<component>.md` with implementation navigation. Add to the quick-start table.
-- **Adding rules to an existing component:** append numbered rules to the relevant section in the what/ file. Use `[PLANNED: TICKET]` for unimplemented behavior.
-- **After implementation:** remove `[PLANNED]` markers from implemented rules. Update how/ files if code structure changed.
 - **When to create a new file vs. extend an existing one:** if the new concern has its own lifecycle, configuration surface, and can be understood independently, it gets its own file. If it's a capability added to an existing component, it goes in that component's file.
 ```
-
-`.ai/spec/constraints.md` — project-wide invariants from CLAUDE.md, linter configs, CI rules, and user statements. The test for inclusion: if an agent violates this rule, is the system wrong? If yes, it's a constraint. If the system still works but the code is lower quality, it belongs in CLAUDE.md as a convention.
 
 `.ai/spec/what/system-overview.md` — always created first. Follow this structure:
 
@@ -237,7 +237,7 @@ If the project already has an `ARCHITECTURE.md`, update it rather than overwriti
 - `.ai/spec/glossary.md` — only if domain terms found or user provided them
 - `.ai/spec/decisions/` — only if existing ADRs found or decisions worth recording
 
-**For greenfield projects:** skip how/ files and `ARCHITECTURE.md` (no codebase to describe yet). Create only README.md, constraints.md, and what/ files with behavioral rules from the user's design description.
+**For greenfield projects:** skip how/ files and `ARCHITECTURE.md` (no codebase to describe yet). Create only README.md and what/ files with behavioral rules from the user's design description.
 
 **Content rules:**
 - Every file must have content worth reading. Empty files are not acceptable.
@@ -276,11 +276,11 @@ When `.ai/spec/` exists with what/ and how/ directories:
 
 1. **Evaluate** — read all files, check for missing structural elements
 2. **Present plan** — show what's missing or misaligned:
-   - Missing constraints.md → offer to create
    - Missing README quick-start table → offer to add
-   - Missing "Updating this spec" section → offer to add
+   - Missing cross-reference table → offer to add
    - Unnumbered behavioral rules → note as suggestion (don't rewrite)
    - Missing planned markers → note as suggestion
+   - Missing Constraints section in what/ files → note as suggestion
 3. **Wait for approval** — do not modify existing files without consent
 4. **Execute approved changes** — create missing files, add missing sections
 5. **Commit**
@@ -294,7 +294,7 @@ When `.ai/spec/` or `spec/` exists with a non-what/how layout (features/, standa
    - `architecture.md` → split into `what/system-overview.md` + `how/project-structure.md`
    - `features/<slug>.md` → fold behavioral rules into relevant `what/` files
    - `standards/<file>.md` → move conventions to CLAUDE.md, discard duplicates
-   - `constraints.md` → keep as-is (may need to move to `.ai/spec/`)
+   - `constraints.md` → distribute rules into relevant what/ file Constraints sections
 3. **Wait for approval** — do not create or modify files without consent
 4. **Execute migration** — create new what/how files, do not delete originals
 5. **User confirms** — only then suggest removing old files

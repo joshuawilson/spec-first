@@ -40,11 +40,9 @@ digraph health {
 
 Quick scan for obvious issues. Run at session start or when asked for a quick check.
 
-1. Read `SPEC_ROOT/constraints.md`. Does it reference files, modules, or components that still exist? Check by looking at the codebase.
+1. **Software layout:** Read what/ files, including the Constraints sections in each. Do behavioral rules and constraints reference components, modules, or integration points that still exist? Do any `[PLANNED: TICKET]` markers reference tickets that have been completed? Check how/ files — do module maps reference files that still exist?
 
-2. **Software layout:** Read what/ files. Do behavioral rules reference components, modules, or integration points that still exist? Do any `[PLANNED: TICKET]` markers reference tickets that have been completed? Check how/ files — do module maps reference files that still exist?
-
-   **Book layout:** Read `SPEC_ROOT/architecture.md`. Do references still exist? Read feature files in `SPEC_ROOT/features/`. Do any have `depends-on` entries that reference features with status `complete` or features that no longer exist?
+   **Book layout:** Read `SPEC_ROOT/constraints.md` and `SPEC_ROOT/architecture.md`. Do references still exist? Read feature files in `SPEC_ROOT/features/`. Do any have `depends-on` entries that reference features with status `complete` or features that no longer exist?
 
 3. Check `SPEC_ROOT/health-report.md` timestamp (if it exists). Has the codebase changed significantly since the last evaluation? Run `git log --oneline -10` and compare dates.
 
@@ -59,10 +57,10 @@ Check all of the following:
 1. **Findability:** Read the spec structure. Is information organized so an agent can find what it needs? Are related concepts in the same file or scattered across files? Flag anything that required hunting across multiple files.
 
 2. **Completeness:** Are there obvious gaps?
-   - **Software layout:** Does each major component in the codebase have a what/ spec? Does each significant implementation pattern have a how/ spec? Are constraints.md rules comprehensive?
+   - **Software layout:** Does each major component in the codebase have a what/ spec? Does each significant implementation pattern have a how/ spec? Do what/ files have Constraints sections for cross-cutting concerns (security, air-gap support, etc.)?
    - **Book layout:** Does constraints.md cover the project's actual constraints? Does architecture.md describe the current architecture? Are there features in the codebase with no corresponding spec in features/?
 
-3. **Accuracy:** Does any spec file say something that contradicts the current codebase? Check a sample of claims against the actual code structure. Check that constraints.md rules are still accurate.
+3. **Accuracy:** Does any spec file say something that contradicts the current codebase? Check a sample of claims (behavioral rules, constraints, module maps) against the actual code structure.
 
 4. **Boundaries:** Does any file try to cover too many concerns? Is the same information in two places? Has any file grown large enough that it should be split?
    - **Software layout:** Do what/ and how/ files maintain proper separation (behavioral rules vs. code navigation)? Is any behavioral rule in a how/ file or vice versa?

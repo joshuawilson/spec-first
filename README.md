@@ -47,10 +47,9 @@ Works with both software (`.ai/spec/`) and book (`spec/`) layouts.
 
 ```
 .ai/spec/
-  README.md          — entry point: scope, reading order, update guide
-  constraints.md     — project-wide invariants
+  README.md          — entry point: scope, reading order, cross-references
   glossary.md        — domain terms (optional)
-  what/              — behavioral rules per component
+  what/              — behavioral rules and constraints per component
     system-overview.md
     <component>.md
   how/               — codebase navigation per concern
@@ -59,6 +58,8 @@ Works with both software (`.ai/spec/`) and book (`spec/`) layouts.
   decisions/         — architecture decision records (optional)
     NNNN-<slug>.md
 ```
+
+Constraints are co-located in each what/ file's Constraints section, not in a separate file. Development conventions stay in CLAUDE.md.
 
 ### Content projects
 
