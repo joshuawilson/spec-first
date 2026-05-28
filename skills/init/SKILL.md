@@ -21,6 +21,7 @@ You MUST create exactly these files and directories. Do not create `features/`, 
 3. `.ai/spec/what/system-overview.md`
 4. `.ai/spec/how/project-structure.md`
 5. `CLAUDE.md` (or update existing one)
+6. `ARCHITECTURE.md` at the project root (human-facing, not agent context)
 
 **Created from exploration (one or more of each):**
 6. `.ai/spec/what/<component>.md` — one file per major component discovered
@@ -217,11 +218,26 @@ AI agents. Content is optimized for precision and machine consumption.
 <Gotchas, non-obvious behavior, things that would surprise a reader.>
 ```
 
+`ARCHITECTURE.md` at the project root — a human-facing overview of the system's architecture. This is NOT agent context (agents use `.ai/spec/`). It is a document for human developers joining the project or returning after time away. You already have the context from exploring the codebase — write this at the same time as the spec files.
+
+Content should include:
+- **Prose overview** of what the system does and how it's structured, written for a human reader
+- **Diagrams** using Mermaid fenced code blocks (` ```mermaid `) to visualize:
+  - System component relationships and boundaries
+  - Data flow or request flow through the system
+  - Deployment topology (if applicable)
+  - Any other structural relationships that are easier to understand visually than in prose
+- **Key architectural decisions** summarized in prose (not the full ADR — just enough context for orientation)
+
+Prefer diagrams over long prose descriptions wherever a visual would communicate the structure more clearly. A component diagram with labeled arrows tells a human more in 10 seconds than three paragraphs of description.
+
+If the project already has an `ARCHITECTURE.md`, update it rather than overwriting — it may contain human-curated content worth preserving. Present changes for approval.
+
 **Conditionally create:**
 - `.ai/spec/glossary.md` — only if domain terms found or user provided them
 - `.ai/spec/decisions/` — only if existing ADRs found or decisions worth recording
 
-**For greenfield projects:** skip how/ files entirely (no codebase to navigate yet). Create only README.md, constraints.md, and what/ files with behavioral rules from the user's design description.
+**For greenfield projects:** skip how/ files and `ARCHITECTURE.md` (no codebase to describe yet). Create only README.md, constraints.md, and what/ files with behavioral rules from the user's design description.
 
 **Content rules:**
 - Every file must have content worth reading. Empty files are not acceptable.
@@ -246,7 +262,7 @@ All specifications live in `.ai/spec/`. Start with `.ai/spec/README.md` for proj
 ### Step 5: Commit
 
 ```bash
-git add .ai/spec/ CLAUDE.md
+git add .ai/spec/ CLAUDE.md ARCHITECTURE.md
 git commit -m "Initialize spec structure
 
 what/: <list what/ files created>
