@@ -1,11 +1,13 @@
 ---
-name: init
-description: Use when starting a new project that needs spec structure, or when adopting the spec structure for an existing project with scattered documentation. Also use when asked to set up specs, create project structure, or organize project documentation for AI agent consumption.
+name: book-init
+description: Use when starting a content project (book, documentation, course material) that needs spec structure with features/ and standards/ directories. For software projects, use spec-first:init instead.
 ---
 
-# Spec Init
+# Spec Init (Content Projects)
 
 Create a standardized spec structure optimized for AI agent comprehension. Every file created has real content from what the skill discovers about the project — no empty templates, no placeholder files.
+
+> **Software projects:** Use `spec-first:init` instead. This skill creates a features/standards structure optimized for content projects where each deliverable (chapter, article, module) is a self-contained unit of work.
 
 **Announce at start:** "I'm using the spec-first:init skill to set up the spec structure."
 
