@@ -16,17 +16,17 @@ The user specifies what to verify. Examples:
 - "verify the auth module"
 - "run spec-verify on features/webhook-registration.md"
 
-If the user specifies content but not the spec, find the matching spec in `spec/features/`.
+If the user specifies content but not the spec, find the matching spec. Check `.ai/spec/what/` first (software layout), then `spec/features/` (book layout). For software projects, the spec may be spread across multiple what/ files — identify which what/ file contains behavioral rules relevant to the content being verified.
 
 ## Steps
 
 ### Step 1: Identify inputs
 
 Find four files:
-1. **Feature spec:** the spec in `spec/features/` that corresponds to the content
+1. **Spec file(s):** the spec that corresponds to the content. In software projects (`.ai/spec/what/`), this may be one or more what/ files containing behavioral rules for the component being verified. In book projects (`spec/features/`), this is the feature spec file.
 2. **Content:** the file being verified
-3. **Constraints:** `spec/constraints.md` (if it exists)
-4. **Glossary:** `spec/glossary.md` (if it exists)
+3. **Constraints:** `.ai/spec/constraints.md` or `spec/constraints.md` (whichever exists)
+4. **Glossary:** `.ai/spec/glossary.md` or `spec/glossary.md` (whichever exists)
 
 If constraints.md or glossary.md don't exist, skip those verification passes.
 
@@ -42,8 +42,8 @@ Wait for the subagent to complete and capture its full output.
 
 ### Step 3: Save and present report
 
-1. Create the directory `spec/verification/` if it doesn't exist: `mkdir -p spec/verification`
-2. Save the subagent's verification report to `spec/verification/<slug>-report.md` — the REPORT output, not the prompt
+1. Determine the spec root (`.ai/spec/` if it exists, otherwise `spec/`). Create the verification directory if needed: `mkdir -p <spec-root>/verification`
+2. Save the subagent's verification report to `<spec-root>/verification/<slug>-report.md` — the REPORT output, not the prompt
 3. Present the summary and any FAIL/VIOLATION findings in conversation
 
 **Common mistake:** Do not save the reviewer PROMPT as the report. The report is the reviewer's OUTPUT — the pass/fail table, constraint checks, term checks, and reference checks.
