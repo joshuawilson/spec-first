@@ -14,7 +14,7 @@ Dispatch an independent agent to verify content against its spec. The reviewer g
 The user specifies what to verify. Examples:
 - "verify chapter 1 against its spec"
 - "verify the auth module"
-- "run spec-verify on features/webhook-registration.md"
+- "run spec-first:verify on features/webhook-registration.md"
 
 If the user specifies content but not the spec, find the matching spec. Check `.ai/spec/what/` first (software layout), then `spec/features/` (book layout). For software projects, the spec may be spread across multiple what/ files — identify which what/ file contains behavioral rules relevant to the content being verified.
 
