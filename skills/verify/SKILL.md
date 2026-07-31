@@ -12,29 +12,46 @@ Dispatch an independent agent to verify content against its spec. The reviewer g
 ## How to invoke
 
 The user specifies what to verify. Examples:
-- "verify chapter 1 against its spec"
-- "verify the auth module"
-- "run spec-first:verify on features/webhook-registration.md"
+- "verify chapter 1 against its spec" (book layout)
+- "verify the auth module against its spec" (software layout)
+- "run spec-first:verify on features/webhook-registration.md" (book layout)
+- "verify the reconciler how/ file is accurate" (software layout — how/ verification)
 
 If the user specifies content but not the spec, find the matching spec. Check `.ai/spec/what/` first (software layout), then `spec/features/` (book layout). For software projects, the spec may be spread across multiple what/ files — identify which what/ file contains behavioral rules relevant to the content being verified.
+
+## Layout detection
+
+1. Check for `.ai/spec/what/` — if found, this is the **software layout**.
+2. Check for `spec/features/` — if found, this is the **book layout**.
+
+The layout determines which reviewer prompt to use and what inputs to gather.
 
 ## Steps
 
 ### Step 1: Identify inputs
 
-Find four files:
-1. **Spec file(s):** the spec that corresponds to the content. In software projects (`.ai/spec/what/`), this may be one or more what/ files containing behavioral rules for the component being verified. In book projects (`spec/features/`), this is the feature spec file.
+**Book layout** — find four files:
+1. **Spec file:** the feature spec in `spec/features/`
 2. **Content:** the file being verified
-3. **Constraints:** `.ai/spec/constraints.md` or `spec/constraints.md` (whichever exists)
-4. **Glossary:** `.ai/spec/glossary.md` or `spec/glossary.md` (whichever exists)
+3. **Constraints:** `spec/constraints.md` (if it exists)
+4. **Glossary:** `spec/glossary.md` (if it exists)
+
+**Software layout** — find:
+1. **what/ file(s):** one or more what/ files containing behavioral rules for the component being verified. Include the Constraints section within each.
+2. **Content:** the source code file(s) or module being verified against the spec
+3. **how/ file(s):** the corresponding how/ file(s) if the verification includes code organization accuracy
+4. **constraints.md:** `.ai/spec/constraints.md` (if it exists — cross-cutting project rules)
+5. **Glossary:** `.ai/spec/glossary.md` (if it exists)
 
 If constraints.md or glossary.md don't exist, skip those verification passes.
 
 ### Step 2: Run verification
 
-Read ALL four input files in full. Then read `reviewer-prompt.md` in this skill's directory for the verification instructions.
+Read ALL input files in full. Then read the appropriate reviewer prompt from this skill's directory:
+- **Book layout:** `reviewer-prompt.md`
+- **Software layout:** `reviewer-prompt-software.md`
 
-Dispatch a subagent using the Agent tool with the reviewer prompt. In the prompt, include the FULL TEXT of all four files (do not summarize, excerpt, or reference file paths — the reviewer needs the actual content inline). The subagent must have NO context from the current session — it is a fresh agent.
+Dispatch a subagent using the Agent tool with the reviewer prompt. In the prompt, include the FULL TEXT of all input files (do not summarize, excerpt, or reference file paths — the reviewer needs the actual content inline). The subagent must have NO context from the current session — it is a fresh agent.
 
 Wait for the subagent to complete and capture its full output.
 
@@ -50,14 +67,24 @@ Wait for the subagent to complete and capture its full output.
 
 ## What the reviewer checks
 
-Four passes (details in reviewer-prompt.md):
+### Book layout (details in reviewer-prompt.md)
+
+Four passes:
 1. **Acceptance criteria** — every `- [ ]` criterion: PASS or FAIL with evidence
 2. **Constraint compliance** — every constraint: PASS or VIOLATION
 3. **Term consistency** — every glossary term: correct usage or inconsistency
 4. **Internal reference accuracy** — every reference to other project parts: valid or broken
 
+### Software layout (details in reviewer-prompt-software.md)
+
+Four passes:
+1. **Behavioral rules compliance** — every numbered rule in the what/ file: does the code comply? PASS or FAIL with code evidence
+2. **Constraint compliance** — constraints from the what/ file's Constraints section AND constraints.md: PASS or VIOLATION
+3. **how/ accuracy** — module map entries: do referenced files and symbols exist? Do data flow descriptions match actual call chains?
+4. **Cross-reference accuracy** — what/ ↔ how/ references, decision references, [PLANNED] ticket references: valid or broken
+
 ## What the reviewer does NOT check
 
-- Output quality (style, readability — that's standards/)
+- Output quality (style, readability)
 - Whether the approach is sound (that's human judgment)
-- Formatting and conventions (that's standards/)
+- Formatting and conventions (that's CLAUDE.md / linter territory)
