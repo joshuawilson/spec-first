@@ -7,7 +7,7 @@ description: Use when starting a session and wanting to check spec freshness, af
 
 Evaluate the health of a project's spec structure. Check for stale references, missing context, structural concerns, and findability issues. Report findings in `health-report.md` (overwritten each evaluation) and in conversation.
 
-**Announce at start:** "I'm using the spec-first:health skill to evaluate spec health."
+**Announce at start:** "I'm using the spec-first health skill to evaluate spec health."
 
 ## Layout detection
 
@@ -16,7 +16,7 @@ Before evaluating, determine which spec layout is present:
 1. Check for `.ai/spec/what/` — if found, this is the **software layout**. Spec root is `.ai/spec/`.
 2. Check for `spec/features/` — if found, this is the **book layout**. Spec root is `spec/`.
 3. Check for `spec/README.md` or `.ai/spec/README.md` — use whichever exists as spec root.
-4. If neither exists, report "No spec structure found. Run spec-first:init to create one." and stop.
+4. If neither exists, report "No spec structure found. Run the init skill to create one." and stop.
 
 Use `SPEC_ROOT` below to mean whichever root was detected.
 
@@ -48,7 +48,7 @@ Quick scan for obvious issues. Run at session start or when asked for a quick ch
    - Check how/ files — do module maps reference files that still exist? Do key symbols named in module maps still exist in the codebase? (`grep` for them.)
    - Are there spec files with no git activity while the source code they describe has changed significantly? (`git log --since` on spec file vs related source paths.)
 
-   **Book layout:** Read `SPEC_ROOT/constraints.md` and `SPEC_ROOT/architecture.md`. Do references still exist? Read feature files in `SPEC_ROOT/features/`. Do any have `depends-on` entries that reference features with status `complete` or features that no longer exist?
+   **Book layout:** Read `SPEC_ROOT/constraints.md` and `SPEC_ROOT/architecture.md`. Do references still exist? Check that `SPEC_ROOT/decisions/README.md` exists (the required decision record scaffold). Read feature files in `SPEC_ROOT/features/`. Do any have `depends-on` entries that reference features with status `complete` or features that no longer exist?
 
 2. Check `SPEC_ROOT/health-report.md` timestamp (if it exists). Has the codebase changed significantly since the last evaluation? Run `git log --oneline -10` and compare dates.
 
@@ -64,7 +64,7 @@ Check all of the following:
 
 2. **Completeness:** Are there obvious gaps?
    - **Software layout:** Does each major component in the codebase have a what/ spec? Does each significant implementation pattern have a how/ spec? Do what/ files have Constraints sections where applicable? Does a `decisions/` directory exist? (It should — init always creates it as scaffolding for capturing architectural decisions over time.) Does `ARCHITECTURE.md` exist at the project root? Are there cross-cutting rules scattered across what/ files that should be in `constraints.md`?
-   - **Book layout:** Does constraints.md cover the project's actual constraints? Does architecture.md describe the current architecture? Are there features in the codebase with no corresponding spec in features/?
+   - **Book layout:** Does constraints.md cover the project's actual constraints? Does architecture.md describe the current architecture? Does the required `decisions/README.md` exist? Are there features in the codebase with no corresponding spec in features/?
    - **Multi-repo:** If this is a parent workspace with child repos, does `how/` contain a routing index (repo-map)? Is it complete — does every child repo with specs appear in it?
 
 3. **Accuracy:** Does any spec file say something that contradicts the current codebase? Check a sample of claims (behavioral rules, constraints, module maps) against the actual code structure. For how/ files, verify that module map entries (files, key symbols, responsibilities) match the current codebase.
@@ -115,6 +115,6 @@ Also present findings in conversation.
 ## What this skill does NOT do
 
 - Does not modify spec files (only reports — human decides whether to act)
-- Does not verify content against spec (that's spec-first:verify)
-- Does not create spec structure (that's spec-first:init)
+- Does not verify content against spec (that's the verify skill)
+- Does not create spec structure (that's the init skill)
 - Does not run automatically — user or workflow invokes it

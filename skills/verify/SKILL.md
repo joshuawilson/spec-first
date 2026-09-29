@@ -1,20 +1,20 @@
 ---
 name: verify
-description: Use when content has been produced and needs independent verification against its spec. Also use when asked to verify, check, or validate work against requirements. Dispatches a fresh agent with no authoring context.
+description: Use when content has been produced and needs independent verification against its spec. Also use when asked to verify, check, or validate work against requirements. Runs a fresh reviewer with no authoring context.
 ---
 
 # Spec Verify
 
 Dispatch an independent agent to verify content against its spec. The reviewer gets the spec, the content, constraints, and glossary — but has no context from the session that produced the content.
 
-**Announce at start:** "I'm using the spec-first:verify skill to independently verify this content against its spec."
+**Announce at start:** "I'm using the spec-first verify skill to independently verify this content against its spec."
 
 ## How to invoke
 
 The user specifies what to verify. Examples:
 - "verify chapter 1 against its spec" (book layout)
 - "verify the auth module against its spec" (software layout)
-- "run spec-first:verify on features/webhook-registration.md" (book layout)
+- "verify features/webhook-registration.md" (book layout)
 - "verify the reconciler how/ file is accurate" (software layout — how/ verification)
 
 If the user specifies content but not the spec, find the matching spec. Check `.ai/spec/what/` first (software layout), then `spec/features/` (book layout). For software projects, the spec may be spread across multiple what/ files — identify which what/ file contains behavioral rules relevant to the content being verified.
@@ -51,11 +51,15 @@ Read ALL input files in full. Then read the appropriate reviewer prompt from thi
 - **Book layout:** `reviewer-prompt.md`
 - **Software layout:** `reviewer-prompt-software.md`
 
-Dispatch a subagent using the Agent tool with the reviewer prompt. In the prompt, include the FULL TEXT of all input files (do not summarize, excerpt, or reference file paths — the reviewer needs the actual content inline). The subagent must have NO context from the current session — it is a fresh agent.
+Build a single reviewer prompt using the appropriate template. Include the FULL TEXT of all input files inline (do not summarize, excerpt, or substitute file paths for their contents). Label each input with its path so evidence can be cited. For large codebases, scope the verification with the user rather than silently omitting files. The reviewer must have NO conversation history from the authoring session.
 
-Wait for the subagent to complete and capture its full output.
+Dispatch using the available harness:
 
-**CRITICAL:** The subagent's output IS the verification report. Do not discard it or summarize it. You need the complete pass/fail results.
+- **Claude Code:** Use the Agent tool to start a fresh reviewer with this prompt. Wait for it and capture its complete output.
+- **Pi:** Start a separate Pi process, **not** another turn in the current session. Write the full prompt to a private temporary file outside the repository (for example, a file created by `mktemp`, with permissions limited to the current user). Then run `pi --print --no-session --no-context-files --no-skills --tools read,grep,find,ls "@$prompt_file" > "$output_file"` from the project root, where both variables hold private temporary file paths. `--no-session` avoids authoring history; `--no-context-files` and `--no-skills` keep unrelated instructions out of the reviewer context. The reviewer has read-only tools so it can check referenced files, symbols, and call chains beyond the inline inputs. Check the exit status; read the **entire** captured output and save it only if the process succeeded and produced a report. Remove both temporary files afterward, including on failure. Do not pass the full prompt as a shell argument or expose it in command logs. If a model must be selected explicitly, use Pi's `--provider`/`--model` options with a model available to the user (including an OpenAI model if desired).
+- **Neither dispatch path available:** Explain that independent verification cannot run in this environment; do not substitute a review in the current authoring session and label it independent.
+
+**CRITICAL:** The fresh reviewer's output IS the verification report. Do not discard it, replace it with the prompt, or summarize it when saving. Capture the complete pass/fail results.
 
 ### Step 3: Save and present report
 
@@ -87,4 +91,4 @@ Four passes:
 
 - Output quality (style, readability)
 - Whether the approach is sound (that's human judgment)
-- Formatting and conventions (that's CLAUDE.md / linter territory)
+- Formatting and conventions (that's the project's agent instruction file / linter territory)

@@ -4,44 +4,37 @@ Tools to organize project knowledge so AI agents can understand your codebase.
 
 ## Installation
 
-### Step 1: Add the marketplace
+### Claude Code
 
-Inside Claude Code, run:
+Inside Claude Code, add the marketplace and install the plugin:
 
 ```
 /plugin marketplace add joshuawilson/spec-first
-```
-
-### Step 2: Install the plugin
-
-```
 /plugin install spec-first@spec-first-marketplace
 ```
 
-### Step 3: Verify
+Run `/plugin` to check the **Installed** tab, or try `/spec-first:init`. If needed, use `/reload-plugins` after installing.
 
-Run `/plugin` and check the **Installed** tab, or try invoking a skill:
+### Pi (including OpenAI models)
 
-```
-/spec-first:init
+Install the repository as a Pi package:
+
+```bash
+pi install git:github.com/joshuawilson/spec-first
 ```
 
-If you need to reload after installing:
-
-```
-/reload-plugins
-```
+Alternatively, if you have a local checkout, run `pi install /path/to/spec-first`. Pi discovers the skill directories in `skills/`; the Claude Code plugin metadata is not needed by Pi. Run `/reload` in an active Pi session after installing or editing skills.
 
 ## Usage
 
-```
-/spec-first:init          Set up spec structure for a software project
-/spec-first:book-init     Set up spec structure for a content project
-/spec-first:health        Check spec freshness and structure
-/spec-first:verify        Verify content against its spec
-```
+| Task | Claude Code | Pi |
+|---|---|---|
+| Set up software specs | `/spec-first:init` | `/skill:init` |
+| Set up content specs | `/spec-first:book-init` | `/skill:book-init` |
+| Check spec health | `/spec-first:health` | `/skill:health` |
+| Verify against a spec | `/spec-first:verify` | `/skill:verify` |
 
-Start with `/spec-first:init` — it will walk you through creating or migrating to the spec structure for your project. It detects what you already have and picks the right mode.
+Start with the init skill for your project type. It detects what you already have and guides you through creating or migrating the spec structure. The spec formats and review criteria are the same with Claude and OpenAI models; verification uses the host's available mechanism to run an independent reviewer.
 
 ## Skills
 
@@ -53,7 +46,7 @@ Scaffolds a spec structure optimized for AI agent comprehension. Creates a what/
 
 Four modes:
 - **Init (existing codebase):** Explores the project, infers what it can, asks about the rest, creates the spec structure
-- **Init (greenfield):** Structured interview, creates what/ files as drafts to be revised after first implementation
+- **Init (greenfield):** Structured interview, creates what/ specs, planned how/ specs, decisions scaffolding, and ARCHITECTURE.md from the proposed design; revises them after implementation
 - **Alignment:** Existing what/how specs — checks structural conformance, detects unspecced components, offers to fill gaps
 - **Migration:** Existing non-what/how specs (features/, standards/) — presents a migration plan
 
@@ -63,7 +56,8 @@ Also supports multi-repo and monorepo projects with a layered parent/child spec 
 
 Scaffolds a spec structure optimized for content projects (books, documentation, courses). Creates a features/standards structure at `spec/`:
 - **features/** — one file per deliverable (chapter, article, module)
-- **standards/** — output production rules (style, formatting, terminology)
+- **decisions/** — required scaffold for decision records, with a README even before the first record
+- **standards/** — output production rules (style, formatting, terminology), if needed
 
 ### spec-first:health — Evaluate spec freshness
 
@@ -109,7 +103,7 @@ Dispatches an independent agent (with no authoring context) to verify content ag
     NNNN-<slug>.md
 ```
 
-Component-specific constraints go in each what/ file's Constraints section. Cross-cutting rules that span the whole project (git workflow, namespace conventions) go in `constraints.md`. Development conventions stay in CLAUDE.md.
+Component-specific constraints go in each what/ file's Constraints section. Cross-cutting rules that span the whole project (git workflow, namespace conventions) go in `constraints.md`. Development conventions stay in the project's agent instruction file (`AGENTS.md` or `CLAUDE.md`).
 
 The `decisions/` directory is always created as scaffolding — architectural decisions happen from day one and need a place to be captured.
 
@@ -124,8 +118,9 @@ spec/
   health-report.md     — agent-generated evaluation
   features/            — one file per deliverable
     <slug>.md
-  decisions/           — architecture decision records (optional)
-    NNNN-<slug>.md
+  decisions/           — required decision record scaffold
+    README.md          — format and purpose
+    NNNN-<slug>.md      — actual decisions (when found)
   standards/           — output production rules (optional)
 ```
 

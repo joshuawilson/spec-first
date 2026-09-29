@@ -7,21 +7,21 @@ description: Use when starting a software project that needs spec structure, or 
 
 Create a standardized spec structure optimized for AI agent comprehension of software projects. The what/how two-layer structure separates the system's contracts (what the system must do, its APIs, data formats, and configuration) from the codebase map (where code lives, call graphs, patterns, and abstractions). Every file created has real content from what the skill discovers — no empty templates, no placeholder files.
 
-> **Content projects (books, docs, courses):** Use `spec-first:book-init` instead. It creates a features/standards structure where each deliverable is a self-contained unit of work.
+> **Content projects (books, docs, courses):** Use the `book-init` skill instead. It creates a features/standards structure where each deliverable is a self-contained unit of work.
 
-**Announce at start:** "I'm using the spec-first:init skill to set up the spec structure."
+**Announce at start:** "I'm using the spec-first init skill to set up the spec structure."
 
 ## Mandatory output
 
 `.ai/spec/` is committed to version control — it is shared project context, not local scratch. Generated outputs (health reports, verification reports) may be gitignored at the team's discretion.
 
-You MUST create exactly these files and directories. Do not create `features/`, `standards/`, or any directories other than `what/`, `how/`, and the optional extensions listed below.
+Create only the applicable files and directories below, including the how/ layer and ARCHITECTURE.md for greenfield projects. Do not create `features/`, `standards/`, or spec subdirectories other than `what/`, `how/`, and the extensions listed below. Agent instruction files at the project root follow Step 4.
 
 **Required (always create):**
 1. `.ai/spec/README.md`
 2. `.ai/spec/what/system-overview.md`
 3. `.ai/spec/how/project-structure.md`
-4. `CLAUDE.md` (or update existing one)
+4. An agent instruction file pointing to the spec (`AGENTS.md` and/or `CLAUDE.md`; see Step 4)
 5. `ARCHITECTURE.md` at the project root (human-facing, not agent context)
 
 **Created from exploration (one or more of each):**
@@ -35,7 +35,7 @@ You MUST create exactly these files and directories. Do not create `features/`, 
 9. `.ai/spec/glossary.md`
 10. `.ai/spec/constraints.md` — only if cross-cutting rules exist that span multiple components and don't belong in any single what/ file (e.g., git workflow rules, shared namespace conventions, API group standards)
 
-Do NOT create `features/`, `standards/`, `what/README.md`, `how/README.md`, or any other files. Component-specific constraints go in the relevant what/ file's Constraints section — co-located with the behavioral rules that give them context. Cross-cutting rules that span the whole project (git workflow, shared conventions, namespace standards) may go in `constraints.md` if they don't belong to any single component. Development conventions (build commands, test commands, coding style) stay in CLAUDE.md. Content about the system's architecture goes in `what/system-overview.md` (behavioral rules, integration points) and `how/project-structure.md` (code organization).
+Do NOT create `features/`, `standards/`, `what/README.md`, `how/README.md`, or any other files. Component-specific constraints go in the relevant what/ file's Constraints section — co-located with the behavioral rules that give them context. Cross-cutting rules that span the whole project (git workflow, shared conventions, namespace standards) may go in `constraints.md` if they don't belong to any single component. Development conventions (build commands, test commands, coding style) stay in the project's agent instruction file. Content about the system's architecture goes in `what/system-overview.md` (behavioral rules, integration points) and `how/project-structure.md` (code organization).
 
 ## what/ vs how/ boundary
 
@@ -70,7 +70,7 @@ digraph mode {
 }
 ```
 
-The key check is `what/ OR how/` (not AND) — a greenfield project that grew may have `what/` without `how/`. Alignment mode handles this by detecting the missing layer and offering to create it. "Non-what/how content" means `features/`, `standards/`, or other spec files in a layout that needs migration. An empty `.ai/spec/` or one with only a README.md falls through to init mode. Also check for `spec/` at the project root (the book-init location) — if found, treat as migration mode.
+The key check is `what/ OR how/` (not AND) — older or partially initialized projects may have `what/` without `how/`. Alignment mode handles this by detecting the missing layer and offering to create it. "Non-what/how content" means `features/`, `standards/`, or other spec files in a layout that needs migration. An empty `.ai/spec/` or one with only a README.md falls through to init mode. Also check for `spec/` at the project root (the book-init location) — if found, treat as migration mode.
 
 **Re-runs are safe.** Running this skill again on an already-initialized project routes to alignment mode, which only acts on missing or misaligned elements — it never overwrites existing content.
 
@@ -113,12 +113,13 @@ Read whatever the project has. Check each source, skip what doesn't exist:
 - "Are there domain-specific terms I should know?"
 - "What would surprise an agent working in this codebase?" (hidden coupling, historical decisions, known gotchas)
 
-**If exploration found nothing** (greenfield): structured interview. Note that greenfield answers are inherently speculative — the resulting what/ files are drafts that should be revised once real implementation begins.
+**If exploration found nothing** (greenfield): structured interview. Note that greenfield answers are inherently speculative — document the user's planned design as planned, not as shipped behavior, and revise it once real implementation begins.
 1. "What does this project do?"
 2. "What tech stack?" (or "not decided yet")
 3. "What are the non-negotiable rules?" (or "none yet")
 4. "What components do you envision?"
-5. "Any domain-specific terms?"
+5. "How do you expect to organize the implementation? What is at least one implementation concern or open design decision worth tracking in how/?" (ask follow-ups if needed to create meaningful how/ files and an architecture overview)
+6. "Any domain-specific terms?"
 
 ### Step 3: Create .ai/spec/
 
@@ -165,7 +166,7 @@ When what/ and how/ file names don't match 1:1, this table maps behavioral specs
 
 - **Rule numbering:** behavioral rules are numbered sequentially within each what/ file. Numbers are stable identifiers — do not renumber when a rule is removed (leave a gap) or inserted (use sub-numbers like 16a, 16b). This keeps external references (Jira comments, PR descriptions) valid.
 - **Planned changes lifecycle:** unimplemented behavior is marked `[PLANNED]` or `[PLANNED: TICKET-XXXX]` inline next to the rule it affects. When implemented: update the rule text to describe actual behavior and change the marker to `[DONE: TICKET-XXXX]`. `[DONE]` markers are cleanup candidates — remove them in a subsequent pass once the rule text fully reflects the shipped behavior. In Planned Changes tables, strike through completed entries (`~~TICKET~~`) rather than deleting them, so readers can see what changed recently.
-- **Constraints:** component-specific constraints go in the relevant what/ file's Constraints section, co-located with behavioral rules. Cross-cutting project-wide rules (git workflow, namespace conventions) may go in `constraints.md`. Development conventions go in CLAUDE.md.
+- **Constraints:** component-specific constraints go in the relevant what/ file's Constraints section, co-located with behavioral rules. Cross-cutting project-wide rules (git workflow, namespace conventions) may go in `constraints.md`. Development conventions go in the project's agent instruction file.
 - **Authority:** what/ specs are authoritative for behavior. how/ specs are authoritative for implementation. When they conflict, what/ wins.
 - **When to create a new file vs. extend an existing one:** if the new concern has its own lifecycle, configuration surface, and can be understood independently, it gets its own file. If it's a capability added to an existing component, it goes in that component's file.
 ```
@@ -200,7 +201,7 @@ When what/ and how/ file names don't match 1:1, this table maps behavioral specs
 
 `.ai/spec/what/<component>.md` — one file per major component or cross-cutting concern discovered. Same structure as system-overview.md but focused on one component.
 
-`.ai/spec/how/project-structure.md` — always created first. Follow this structure:
+`.ai/spec/how/project-structure.md` — always created first, including for greenfield projects. Follow this structure:
 
 ```markdown
 # Project Structure
@@ -247,7 +248,7 @@ When what/ and how/ file names don't match 1:1, this table maps behavioral specs
 <Gotchas, non-obvious behavior, things that would surprise a reader.>
 ```
 
-`ARCHITECTURE.md` at the project root — a human-facing overview of the system's architecture. This complements but does not duplicate the spec: specs have numbered rules and structured tables for agents; ARCHITECTURE.md has prose narrative and diagrams (Mermaid) for humans. Both are written from the same exploration pass. You already have the context from exploring the codebase — write this at the same time as the spec files.
+`ARCHITECTURE.md` at the project root — always create a human-facing overview of the system's architecture, including for greenfield projects. This complements but does not duplicate the spec: specs have numbered rules and structured tables for agents; ARCHITECTURE.md has prose narrative and diagrams (Mermaid) for humans. Both are written from the same exploration pass. You already have the context from exploring the codebase — write this at the same time as the spec files.
 
 Content should include:
 - **Prose overview** of what the system does and how it's structured, written for a human reader
@@ -265,7 +266,7 @@ If the project already has an `ARCHITECTURE.md`, update it rather than overwriti
 **Conditionally create:**
 - `.ai/spec/glossary.md` — only if domain terms found or user provided them
 
-**For greenfield projects:** skip how/ files and `ARCHITECTURE.md` (no codebase to describe yet). Create only README.md and what/ files with behavioral rules from the user's design description. Re-run init after the first meaningful implementation — the mode detection will route to alignment mode, which will detect the missing how/ layer and ARCHITECTURE.md and offer to create them from the now-existing codebase.
+**For greenfield projects:** create all required files, including `.ai/spec/how/project-structure.md`, at least one `.ai/spec/how/<concern>.md`, `.ai/spec/decisions/README.md`, and `ARCHITECTURE.md`. Use the interview answers to describe the proposed organization, the first implementation concern, component relationships, and the decisions already made. Label plans and assumptions explicitly; do not claim that modules, symbols, or call chains exist before code does. Omit inapplicable sections (such as a Module Map without files) and record concrete open implementation decisions where useful. Ask follow-up questions if necessary to make each file worth reading; do not generate empty or placeholder files. After the first meaningful implementation, re-run init in alignment mode to update the planned how/ and architecture descriptions against the actual codebase.
 
 **Content rules:**
 - Every file must have content worth reading. Empty files are not acceptable.
@@ -273,11 +274,15 @@ If the project already has an `ARCHITECTURE.md`, update it rather than overwriti
 - how/ files should curate, not enumerate. A Module Map that identifies which files matter, names key symbols, and explains each file's role is valuable — a raw directory tree or tech stack restated from a manifest file is not. The test: does this save the agent meaningful exploration time, or could `find`/`grep` produce the same information in seconds?
 - If a section can't be filled, omit it. Empty sections cost the reader tokens and provide no information. A missing section is honest — the content either doesn't exist or wasn't discovered.
 
-### Step 4: Update CLAUDE.md (mandatory — do not skip)
+### Step 4: Update agent instructions (mandatory — do not skip)
 
-If CLAUDE.md exists: add a pointer to `.ai/spec/README.md` under a "## Specs" heading. Don't duplicate spec content.
+Ensure both Pi and Claude Code can discover the spec entry point without duplicating spec content or replacing existing project instructions:
 
-If CLAUDE.md doesn't exist: create one. This step is not optional — CLAUDE.md is how the agent finds the spec structure:
+- If `AGENTS.md` exists, add the spec pointer under a `## Specs` heading (or update its existing pointer). If `CLAUDE.md` also exists, preserve its content and add a pointer to `AGENTS.md` and the spec entry point if not already present. Otherwise create a short `CLAUDE.md` pointing Claude Code to `AGENTS.md` (example below).
+- If only `CLAUDE.md` exists, add the spec pointer there under `## Specs`. Pi also reads `CLAUDE.md`; do not create a redundant `AGENTS.md`.
+- If neither exists, create `AGENTS.md` with the spec pointer and a small `CLAUDE.md` that tells Claude Code to read `AGENTS.md`. Do not copy the full instructions into both files.
+
+Suggested new `AGENTS.md`:
 
 ```markdown
 # Project
@@ -287,23 +292,35 @@ If CLAUDE.md doesn't exist: create one. This step is not optional — CLAUDE.md 
 All specifications live in `.ai/spec/`. Start with `.ai/spec/README.md` for project overview, reading order, and structure guide.
 ```
 
-### Step 5: Commit
+Suggested new `CLAUDE.md`:
 
-Check `git status` first. If there are unrelated staged or modified files (especially CLAUDE.md or ARCHITECTURE.md with pre-existing uncommitted edits), stash or separate them before committing. Only stage files created or modified by this skill.
+```markdown
+# Project instructions
+
+Read `AGENTS.md` for project instructions and the spec entry point.
+```
+
+When modifying an existing file, keep its other instructions intact. If it already contains a spec pointer, update it rather than adding a second one.
+
+### Step 5: Commit only if requested
+
+Check `git status` first. Commit only if the user explicitly requested a commit; otherwise leave the changes for review. Construct a list of **exact file paths** created or modified by this skill, including only the agent instruction files and ARCHITECTURE.md actually changed. Review each file's diff; if a file also contains the user's unrelated changes, ask how to separate them before committing. Never use a directory-wide path or unrestricted `git commit` here: unrelated work may already be staged.
+
+When a commit was requested, stage exactly those paths and use a path-limited commit so previously staged unrelated files remain outside it:
 
 ```bash
+# Example paths only: replace with the exact files changed in this run.
+paths=(.ai/spec/README.md .ai/spec/what/system-overview.md .ai/spec/how/project-structure.md .ai/spec/decisions/README.md AGENTS.md CLAUDE.md ARCHITECTURE.md)
 git status
-git add .ai/spec/ CLAUDE.md ARCHITECTURE.md
-git commit -m "Initialize spec structure
-
-what/: <list what/ files created>
-how/: <list how/ files created>
-<list any extensions created>"
+git add -- "${paths[@]}"
+git commit --only -m "Initialize spec structure" -- "${paths[@]}"
 ```
+
+Include any additional component or concern files explicitly; omit nonexistent or unchanged example paths.
 
 ## Alignment mode
 
-When `.ai/spec/` exists with what/ or how/ directories (or both). Typical triggers: the skill has been updated and existing specs need structural conformance, the codebase has grown and new components lack spec files, or a greenfield project now has code and needs its how/ layer and ARCHITECTURE.md.
+When `.ai/spec/` exists with what/ or how/ directories (or both). Typical triggers: the skill has been updated and existing specs need structural conformance, the codebase has grown and new components lack spec files, or a greenfield project's planned how/ layer and ARCHITECTURE.md need updating after code has been written.
 
 1. **Evaluate** — read all files, check for missing structural elements
 2. **Present plan** — show what's missing or misaligned:
@@ -314,12 +331,13 @@ When `.ai/spec/` exists with what/ or how/ directories (or both). Typical trigge
    - Missing planned markers → note as suggestion
    - Missing Constraints section in what/ files → note as suggestion
    - ARCHITECTURE.md missing or stale (compare against spec content) → offer to create or update
+   - AGENTS.md/CLAUDE.md missing or not pointing to `.ai/spec/README.md` (directly or via AGENTS.md) → offer to repair using Step 4, preserving existing instructions
    - Codebase components without corresponding what/ or how/ files → offer to create
 3. **Wait for approval** — do not modify existing files without consent
-4. **Execute approved changes** — create missing files, add missing sections
-5. **Commit**
+4. **Execute approved changes** — create missing files, add missing sections, and repair agent instruction pointers only if approved
+5. **Commit only if requested** — stage only approved changes
 
-For content staleness checking (spec drift from code), use `spec-first:health` instead.
+For content staleness checking (spec drift from code), use the health skill instead.
 
 ## Migration mode
 
@@ -329,18 +347,19 @@ When `.ai/spec/` or `spec/` exists with a non-what/how layout (features/, standa
 2. **Present migration mapping** — show where each file maps:
    - `architecture.md` → split into `what/system-overview.md` + `how/project-structure.md`
    - `features/<slug>.md` → fold behavioral rules into relevant `what/` files
-   - `standards/<file>.md` → move conventions to CLAUDE.md, discard duplicates
+   - `standards/<file>.md` → move conventions to the project's agent instruction file, discard duplicates
    - `constraints.md` → component-specific rules go into relevant what/ file Constraints sections; cross-cutting project-wide rules stay in `constraints.md`
+   - AGENTS.md/CLAUDE.md pointer absent or outdated → offer to update the existing instruction files or create a short pointer per Step 4
 3. **Wait for approval** — do not create or modify files without consent
 4. **Execute migration** — create new what/how files, do not delete originals
 5. **User confirms** — only then suggest removing old files. If the user declines, add a note to README.md stating that `what/` and `how/` are authoritative and the old structure is retained for reference only.
-6. **Commit**
+6. **Commit only if requested** — stage only approved changes
 
 ## What this skill does NOT do
 
-1. **Duplicate CLAUDE.md/AGENTS.md content.** Build commands, test commands, coding conventions stay where they are.
+1. **Duplicate agent instruction content.** Build commands, test commands, coding conventions stay where they are.
 2. **Enumerate what `find`/`grep` can show.** No file that just lists the directory tree or restates the tech stack from a manifest. Curated module maps with key symbols and responsibilities are fine — raw enumeration is not.
 3. **Create feature files.** Work items live in the issue tracker, not in spec files.
-4. **Create standards files.** Coding style lives in CLAUDE.md and linter configs.
+4. **Create standards files.** Coding style lives in the project's agent instruction file and linter configs.
 5. **Invent behavioral rules.** Only capture rules that exist (in code, docs, or user statements).
 6. **Overwrite existing spec content without approval.** Always show a plan first.
